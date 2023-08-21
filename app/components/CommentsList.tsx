@@ -1,0 +1,40 @@
+"use client";
+import { CommentsInterface } from "@/interfaces/interfaces";
+import Comments from "./Comments";
+import { Typography, Grid } from "@mui/material";
+
+const getComments = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/comments", {
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch comments");
+    }
+    return res.json();
+  } catch (error) {
+    console.log("Error", error);
+  }
+};
+
+export default async function CommentsList() {
+  const { comments } = await getComments();
+
+  return (
+    <Grid container maxWidth={"700px"}>
+      {comments.map((comment: CommentsInterface) => (
+        <Grid
+          item
+          xs={12}
+          md={12}
+          lg={12}
+          xl={12}
+          key={comment._id}
+          sx={{ justifyContent: "center", alignItems: "center" }}
+        >
+          <Comments comment={comment} />
+        </Grid>
+      ))}
+    </Grid>
+  );
+}

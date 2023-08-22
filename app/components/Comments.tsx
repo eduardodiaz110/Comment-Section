@@ -32,12 +32,10 @@ export default function Comments({ comment }: CommentsProps) {
     }
   };
 
-  // const handleDelete = async (id: string) => {
-  //   const wasUpdated = await minusScore(id);
-  //   if (wasUpdated) {
-  //     router.refresh();
-  //   }
-  // };
+  const handleDelete = async (id: string) => {
+    console.log("delete");
+    console.log("delete2");
+  };
 
   return (
     <Box key={comment._id}>
@@ -110,6 +108,7 @@ export default function Comments({ comment }: CommentsProps) {
                 </Typography>
               </IconButton>
               <IconButton
+                onClick={() => handleDelete(comment._id)}
                 style={{
                   color: "#595fb0",
                   padding: "2px",

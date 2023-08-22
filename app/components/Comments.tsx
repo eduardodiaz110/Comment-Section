@@ -1,16 +1,44 @@
 "use client";
 
-import { CommentsInterface } from "@/interfaces/interfaces";
-import { Box, Typography, Container, IconButton } from "@mui/material";
-import { HiMiniPlus, HiMiniMinus, HiMiniArrowUturnLeft } from "react-icons/hi2";
-import addScore from "../functions/score.button";
-// import { useRouter } from "next/navigation";
+import { CommentsInterface, RepliesInterface } from "@/interfaces/interfaces";
+import { Box, Typography, IconButton } from "@mui/material";
+import {
+  HiMiniPlus,
+  HiMiniMinus,
+  HiMiniArrowUturnLeft,
+  HiMiniTrash,
+} from "react-icons/hi2";
+import { addScore, minusScore } from "../functions/comments.button";
+import { useRouter } from "next/navigation";
 
 interface CommentsProps {
   comment: CommentsInterface;
 }
 
 export default function Comments({ comment }: CommentsProps) {
+  const router = useRouter();
+
+  const handleAddScore = async (id: string) => {
+    const wasUpdated = await addScore(id);
+    if (wasUpdated) {
+      router.refresh();
+    }
+  };
+
+  const handleMinusScore = async (id: string) => {
+    const wasUpdated = await minusScore(id);
+    if (wasUpdated) {
+      router.refresh();
+    }
+  };
+
+  // const handleDelete = async (id: string) => {
+  //   const wasUpdated = await minusScore(id);
+  //   if (wasUpdated) {
+  //     router.refresh();
+  //   }
+  // };
+
   return (
     <Box key={comment._id}>
       <Box
@@ -35,12 +63,15 @@ export default function Comments({ comment }: CommentsProps) {
         >
           <IconButton
             style={{ color: "#c9c6e3", padding: "2px" }}
-            onClick={() => addScore(comment._id)}
+            onClick={() => handleAddScore(comment._id)}
           >
             <HiMiniPlus size="20px" />
           </IconButton>
           <Typography fontWeight={600}>{comment.score}</Typography>
-          <IconButton style={{ color: "#c9c6e3", padding: "0px" }}>
+          <IconButton
+            style={{ color: "#c9c6e3", padding: "0px" }}
+            onClick={() => handleMinusScore(comment._id)}
+          >
             <HiMiniMinus size="20px" />
           </IconButton>
         </Box>
@@ -71,18 +102,34 @@ export default function Comments({ comment }: CommentsProps) {
                 style={{ color: "#595fb0", padding: "2px", marginTop: "-3px" }}
               >
                 <HiMiniArrowUturnLeft size="15px" />
+                <Typography
+                  sx={{ marginLeft: "5px", color: "#595fb0" }}
+                  fontWeight={600}
+                >
+                  Reply
+                </Typography>
               </IconButton>
-              <Typography
-                sx={{ marginLeft: "5px", color: "#595fb0" }}
-                fontWeight={600}
+              <IconButton
+                style={{
+                  color: "#595fb0",
+                  padding: "2px",
+                  paddingLeft: "10px",
+                  marginTop: "-3px",
+                }}
               >
-                Reply
-              </Typography>
+                <HiMiniTrash size="15px" />
+                <Typography
+                  sx={{ marginLeft: "5px", color: "#595fb0" }}
+                  fontWeight={600}
+                >
+                  Delete
+                </Typography>
+              </IconButton>
             </Box>
           </Box>
           <Box sx={{ pt: "7px" }}>
             <Typography fontWeight={400} sx={{ color: "#75787c" }}>
-              {comment.content.toLocaleString()}
+              {comment.content}
             </Typography>
           </Box>
         </Box>
@@ -123,13 +170,17 @@ export default function Comments({ comment }: CommentsProps) {
                   marginRight: "20px",
                 }}
               >
-                <IconButton style={{ color: "#c9c6e3", padding: "2px" }}>
+                <IconButton
+                  style={{ color: "#c9c6e3", padding: "2px" }}
+                  onClick={() => handleAddScore(reply._id)}
+                >
                   <HiMiniPlus size="20px" />
                 </IconButton>
-                <Typography fontWeight={600}>
-                  {reply.score.toLocaleString()}
-                </Typography>
-                <IconButton style={{ color: "#c9c6e3", padding: "0px" }}>
+                <Typography fontWeight={600}>{reply.score}</Typography>
+                <IconButton
+                  style={{ color: "#c9c6e3", padding: "0px" }}
+                  onClick={() => handleMinusScore(reply._id)}
+                >
                   <HiMiniMinus size="20px" />
                 </IconButton>
               </Box>
@@ -181,7 +232,7 @@ export default function Comments({ comment }: CommentsProps) {
                 </Box>
                 <Box sx={{ pt: "7px" }}>
                   <Typography fontWeight={400} sx={{ color: "#75787c" }}>
-                    {reply.content.toLocaleString()}
+                    {reply.content}
                   </Typography>
                 </Box>
               </Box>

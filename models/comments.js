@@ -35,4 +35,7 @@ const commentsSchema = new Schema(
 const Comments =
   mongoose.models.Comments || mongoose.model("Comments", commentsSchema);
 
+export const Replies =
+  mongoose.models.Replies || mongoose.model("Replies", repliesSchema);
+
 export default Comments;

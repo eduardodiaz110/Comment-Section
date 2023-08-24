@@ -1,40 +1,32 @@
 "use client";
-
 import { Typography, Grid, Box, TextField, Button } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { addCommentOrReply } from "../functions/textBox";
 
-export default function TextBox() {
+export default function TextBox({
+  setReplyTo,
+  replyTo,
+}: {
+  setReplyTo: (value: string) => void;
+  replyTo: string;
+}) {
   const router = useRouter();
   const [content, setContent] = useState("");
 
   const handleSubmit = async (e: any) => {
+    if (replyTo) {
+      console.log("respuesta", replyTo);
+    }
     e.preventDefault();
     if (!content) {
       alert("Escribe algo perra");
       return;
     }
-    try {
-      const res = await fetch("http://localhost:3000/api/comments", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          content,
-          score: 0,
-          user: {
-            image: "imagen.png",
-            username: "eduardo",
-          },
-        }),
-      });
-
-      if (res.ok) {
-        router.refresh();
-      }
-    } catch (error) {
-      console.log(error);
+    const addCommentorReply = await addCommentOrReply(content, replyTo);
+    if (addCommentorReply) {
+      setContent("");
+      router.refresh();
     }
   };
 
@@ -58,7 +50,7 @@ export default function TextBox() {
           justifyContent: "center",
         }}
       >
-        <Box sx={{ width: "100%", display: "flex" }}>
+        <Box id="textBox" sx={{ width: "100%", display: "flex" }}>
           <TextField
             sx={{ width: "85%", mr: "10px" }}
             name="postComment"
@@ -67,6 +59,7 @@ export default function TextBox() {
             onChange={handleChange}
             multiline={true}
             rows={4}
+            value={content}
           />
           <Button
             variant="contained"

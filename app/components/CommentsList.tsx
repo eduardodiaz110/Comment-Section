@@ -1,7 +1,7 @@
-"use client";
 import { CommentsInterface } from "@/interfaces/interfaces";
 import Comments from "./Comments";
 import { Typography, Grid } from "@mui/material";
+import { useState, useEffect } from "react";
 
 const getComments = async () => {
   try {
@@ -17,8 +17,23 @@ const getComments = async () => {
   }
 };
 
-export default async function CommentsList() {
-  const { comments } = await getComments();
+export default function CommentsList({
+  setReplyTo,
+}: {
+  setReplyTo: (value: string) => void;
+}) {
+  const [comments, setComments] = useState<CommentsInterface[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (isLoading) {
+      (async () => {
+        const result = await getComments();
+        setComments(result.comments);
+        setIsLoading(false);
+      })();
+    }
+  }, []);
 
   return (
     <Grid container maxWidth={"700px"}>
@@ -32,7 +47,7 @@ export default async function CommentsList() {
           key={comment._id}
           sx={{ justifyContent: "center", alignItems: "center" }}
         >
-          <Comments comment={comment} />
+          <Comments comment={comment} setReplyTo={setReplyTo} />
         </Grid>
       ))}
     </Grid>

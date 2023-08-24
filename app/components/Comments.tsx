@@ -1,5 +1,3 @@
-"use client";
-
 import { CommentsInterface, RepliesInterface } from "@/interfaces/interfaces";
 import { Box, Typography, IconButton } from "@mui/material";
 import {
@@ -8,14 +6,22 @@ import {
   HiMiniArrowUturnLeft,
   HiMiniTrash,
 } from "react-icons/hi2";
-import { addScore, minusScore } from "../functions/comments.button";
+import {
+  addScore,
+  minusScore,
+  deleteCommentOrReply,
+  replyToComment,
+} from "../functions/buttonsInComments";
 import { useRouter } from "next/navigation";
 
 interface CommentsProps {
   comment: CommentsInterface;
 }
 
-export default function Comments({ comment }: CommentsProps) {
+export default function Comments({
+  comment,
+  setReplyTo,
+}: CommentsProps & { setReplyTo: (id: string) => void }) {
   const router = useRouter();
 
   const handleAddScore = async (id: string) => {
@@ -33,8 +39,23 @@ export default function Comments({ comment }: CommentsProps) {
   };
 
   const handleDelete = async (id: string) => {
-    console.log("delete");
-    console.log("delete2");
+    const wasUpdated = await deleteCommentOrReply(id);
+    if (wasUpdated) {
+      router.refresh();
+    }
+  };
+
+  const handleReply = async (replyTo: string) => {
+    const sectionElement = document.getElementById("textBox");
+
+    // Si el elemento existe, desplázate hasta él
+    if (sectionElement) {
+      sectionElement.scrollIntoView({ behavior: "smooth" });
+      setReplyTo(replyTo);
+    } else {
+      console.error(`Elemento con ID "textBox" no encontrado.`);
+      setReplyTo(replyTo);
+    }
   };
 
   return (
@@ -98,6 +119,7 @@ export default function Comments({ comment }: CommentsProps) {
             <Box sx={{ display: "flex" }}>
               <IconButton
                 style={{ color: "#595fb0", padding: "2px", marginTop: "-3px" }}
+                onClick={() => handleReply(comment._id)}
               >
                 <HiMiniArrowUturnLeft size="15px" />
                 <Typography
@@ -218,15 +240,33 @@ export default function Comments({ comment }: CommentsProps) {
                         padding: "2px",
                         marginTop: "-3px",
                       }}
+                      onClick={() => handleReply(comment._id)}
                     >
                       <HiMiniArrowUturnLeft size="15px" />
+                      <Typography
+                        sx={{ marginLeft: "5px", color: "#595fb0" }}
+                        fontWeight={600}
+                      >
+                        Reply
+                      </Typography>
                     </IconButton>
-                    <Typography
-                      sx={{ marginLeft: "5px", color: "#595fb0" }}
-                      fontWeight={600}
+                    <IconButton
+                      onClick={() => handleDelete(reply._id)}
+                      style={{
+                        color: "#595fb0",
+                        padding: "2px",
+                        paddingLeft: "10px",
+                        marginTop: "-3px",
+                      }}
                     >
-                      Reply
-                    </Typography>
+                      <HiMiniTrash size="15px" />
+                      <Typography
+                        sx={{ marginLeft: "5px", color: "#595fb0" }}
+                        fontWeight={600}
+                      >
+                        Delete
+                      </Typography>
+                    </IconButton>
                   </Box>
                 </Box>
                 <Box sx={{ pt: "7px" }}>

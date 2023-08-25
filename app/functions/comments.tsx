@@ -122,7 +122,6 @@ export async function deleteCommentOrReply(id: string) {
     );
 
     if (response.ok) {
-      console.log("funciono");
       return true;
     }
   } catch (error) {

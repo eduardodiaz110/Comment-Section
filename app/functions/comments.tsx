@@ -67,7 +67,6 @@ export async function minusScore(id: string) {
 
     if (response.ok) {
       const data = await response.json();
-      console.log(data);
 
       const currentScore = data.comment || data.reply;
 
@@ -106,7 +105,6 @@ export async function minusScore(id: string) {
 }
 
 export async function deleteCommentOrReply(id: string) {
-  console.log(id);
   if (!id) {
     alert("No se encontro el id");
     return; //prueba

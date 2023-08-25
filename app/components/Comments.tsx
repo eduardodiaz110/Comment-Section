@@ -59,8 +59,6 @@ export default function Comments({
   const handleMinusScore = async (id: string) => {
     const updatedScore = await minusScore(id);
     if (updatedScore !== undefined && updatedScore !== null) {
-      console.log("Updated Score:", updatedScore);
-
       setComments((prevComments: any) => {
         return prevComments.map((comment: any) => {
           if (comment._id === id) {

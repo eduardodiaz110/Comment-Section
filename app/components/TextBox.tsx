@@ -26,11 +26,9 @@ export default function TextBox({
     }
 
     const addedCommentOrReply = await addCommentOrReply(content, replyTo);
-    console.log(addedCommentOrReply);
 
     if (addedCommentOrReply) {
       setContent("");
-      console.log("addedCommentOrReply", addedCommentOrReply);
 
       if (replyTo) {
         const updatedComments = comments.map((comment: any) => {
@@ -40,7 +38,6 @@ export default function TextBox({
               replies: [...comment.replies, addedCommentOrReply],
             };
           }
-          console.log("comment", comment);
           return comment;
         });
         setComments(updatedComments); // Esto actualiza el estado de tus comentarios

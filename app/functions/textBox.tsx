@@ -31,7 +31,6 @@ export async function addCommentOrReply(content: string, replyTo?: string) {
     if (res.ok) {
       // Parsea la respuesta como JSON y retorna
       const data = await res.json();
-      console.log("data", data);
       return data;
     }
   } catch (error) {

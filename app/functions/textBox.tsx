@@ -1,13 +1,8 @@
 export async function addCommentOrReply(content: string, replyTo?: string) {
-  if (replyTo) {
-    console.log(replyTo);
-    try {
-      const res = await fetch("http://localhost:3000/api/comments", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
+  try {
+    // Determina el body dependiendo de si es una respuesta o un comentario principal
+    const bodyData = replyTo
+      ? {
           content,
           score: 0,
           replyingTo: replyTo,
@@ -15,34 +10,29 @@ export async function addCommentOrReply(content: string, replyTo?: string) {
             image: "imagen.png",
             username: "eduardo",
           },
-        }),
-      });
+        }
+      : {
+          content,
+          score: 0,
+          user: {
+            image: "imagen.png",
+            username: "eduardo",
+          },
+        };
 
-      if (res.ok) {
-        return true;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  try {
     const res = await fetch("http://localhost:3000/api/comments", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify({
-        content,
-        score: 0,
-        user: {
-          image: "imagen.png",
-          username: "eduardo",
-        },
-      }),
+      body: JSON.stringify(bodyData),
     });
 
     if (res.ok) {
-      return true;
+      // Parsea la respuesta como JSON y retorna
+      const data = await res.json();
+      console.log("data", data);
+      return data;
     }
   } catch (error) {
     console.log(error);

@@ -1,3 +1,4 @@
+"use client";
 import { Typography, Container } from "@mui/material";
 import CommentSection from "./CommentSection";
 
@@ -15,6 +16,7 @@ export default function Home() {
         <Typography variant="h1" pb={"30px"} style={{ textAlign: "center" }}>
           Comments Section
         </Typography>
+
         <CommentSection />
       </Container>
     </>

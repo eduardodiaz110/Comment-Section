@@ -15,12 +15,20 @@ export async function POST(request) {
         { status: 404 }
       );
     }
-    await parentComment.replies.push({ content, score, user });
+    const newReply = { content, score, user };
+    parentComment.replies.push(newReply);
     await parentComment.save();
-    return NextResponse.json({ message: "Reply Created" }, { status: 201 });
+
+    // Get the _id of the newly created reply. It should be the last element in the array
+    newReply._id = parentComment.replies[parentComment.replies.length - 1]._id;
+
+    // Return the newly created reply including its _id
+    return NextResponse.json(newReply, { status: 201 });
   } else {
-    await Comments.create({ content, score, user });
-    return NextResponse.json({ message: "Comment Created" }, { status: 201 });
+    const newComment = await Comments.create({ content, score, user });
+
+    // Return the newly created comment including its _id
+    return NextResponse.json(newComment, { status: 201 });
   }
 }
 
@@ -40,7 +48,6 @@ export async function DELETE(request) {
   console.log("DELETE created");
 
   const comment = await Comments.findById(id);
-  console.log(`Comment found: ${comment}`); // Debug log
 
   // If the comment with the given ID is found, delete it.
   if (comment) {

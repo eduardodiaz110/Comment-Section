@@ -11,7 +11,7 @@ import {
   minusScore,
   deleteCommentOrReply,
   replyToComment,
-} from "../functions/buttonsInComments";
+} from "../functions/comments";
 import { useRouter } from "next/navigation";
 
 interface CommentsProps {
@@ -19,29 +19,99 @@ interface CommentsProps {
 }
 
 export default function Comments({
+  comments,
+  setComments,
   comment,
   setReplyTo,
-}: CommentsProps & { setReplyTo: (id: string) => void }) {
-  const router = useRouter();
-
+}: {
+  comments: any;
+  setComments: any;
+  comment: CommentsInterface;
+  setReplyTo: (id: string) => void;
+}) {
   const handleAddScore = async (id: string) => {
-    const wasUpdated = await addScore(id);
-    if (wasUpdated) {
-      router.refresh();
+    const updatedScore = await addScore(id);
+    if (updatedScore !== undefined && updatedScore !== null) {
+      setComments((prevComments: any) => {
+        return prevComments.map((comment: any) => {
+          if (comment._id === id) {
+            // Si el ID coincide con un comentario principal
+            return { ...comment, score: updatedScore };
+          }
+
+          // Si el ID no coincide con un comentario principal, buscamos en las respuestas
+          if (comment.replies) {
+            const updatedReplies = comment.replies.map((reply: any) => {
+              if (reply._id === id) {
+                return { ...reply, score: updatedScore };
+              }
+              return reply;
+            });
+            return { ...comment, replies: updatedReplies };
+          }
+
+          return comment; // Si no se encuentra el ID en los comentarios ni en las respuestas
+        });
+      });
     }
   };
 
   const handleMinusScore = async (id: string) => {
-    const wasUpdated = await minusScore(id);
-    if (wasUpdated) {
-      router.refresh();
+    const updatedScore = await minusScore(id);
+    if (updatedScore !== undefined && updatedScore !== null) {
+      console.log("Updated Score:", updatedScore);
+
+      setComments((prevComments: any) => {
+        return prevComments.map((comment: any) => {
+          if (comment._id === id) {
+            // Si el ID coincide con un comentario principal
+            return { ...comment, score: updatedScore };
+          }
+
+          // Si el ID no coincide con un comentario principal, buscamos en las respuestas
+          if (comment.replies) {
+            const updatedReplies = comment.replies.map((reply: any) => {
+              if (reply._id === id) {
+                return { ...reply, score: updatedScore };
+              }
+              return reply;
+            });
+            return { ...comment, replies: updatedReplies };
+          }
+
+          return comment; // Si no se encuentra el ID en los comentarios ni en las respuestas
+        });
+      });
     }
   };
 
   const handleDelete = async (id: string) => {
-    const wasUpdated = await deleteCommentOrReply(id);
-    if (wasUpdated) {
-      router.refresh();
+    const wasDeleted = await deleteCommentOrReply(id);
+    if (wasDeleted) {
+      setComments((prevComments: any) => {
+        // Busca si el ID pertenece a un comentario
+        const isComment = prevComments.some(
+          (comment: any) => comment._id === id
+        );
+
+        if (isComment) {
+          // Si es un comentario, elimínalo
+          return prevComments.filter((comment: any) => comment._id !== id);
+        } else {
+          // Si no es un comentario, podría ser una respuesta. Actualiza el comentario que contiene esa respuesta
+          return prevComments.map((comment: any) => {
+            if (comment.replies.some((reply: any) => reply._id === id)) {
+              return {
+                ...comment,
+                replies: comment.replies.filter(
+                  (reply: any) => reply._id !== id
+                ),
+              };
+            }
+            return comment;
+          });
+        }
+      });
     }
   };
 
@@ -54,7 +124,6 @@ export default function Comments({
       setReplyTo(replyTo);
     } else {
       console.error(`Elemento con ID "textBox" no encontrado.`);
-      setReplyTo(replyTo);
     }
   };
 
@@ -103,16 +172,14 @@ export default function Comments({
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              {comment.user.map((u) => (
-                <Typography fontWeight={600} sx={{ color: "#404953" }}>
-                  {u.username}
-                </Typography>
-              ))}
+              <Typography fontWeight={600} sx={{ color: "#404953" }}>
+                {comment.user.username}
+              </Typography>
               <Typography
                 sx={{ marginLeft: "20px", color: "#75787c" }}
                 fontWeight={500}
               >
-                {comment.createdAt.toLocaleUpperCase()}
+                {comment.createdAt}
               </Typography>
             </Box>
 
@@ -156,7 +223,7 @@ export default function Comments({
         </Box>
       </Box>
 
-      {comment.replies && comment.replies.length > 0 ? (
+      {comment.replies ? (
         //Box para Linea gris de la izq
         <Box
           sx={{
@@ -220,16 +287,14 @@ export default function Comments({
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center" }}>
-                    {reply.user.map((u) => (
-                      <Typography fontWeight={600} sx={{ color: "#404953" }}>
-                        {u.username}
-                      </Typography>
-                    ))}
+                    <Typography fontWeight={600} sx={{ color: "#404953" }}>
+                      {reply.user.username}
+                    </Typography>
                     <Typography
                       sx={{ marginLeft: "20px", color: "#75787c" }}
                       fontWeight={500}
                     >
-                      {reply.createdAt.toLocaleUpperCase()}
+                      {reply.createdAt}
                     </Typography>
                   </Box>
 

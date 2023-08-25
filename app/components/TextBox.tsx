@@ -5,28 +5,50 @@ import { useRouter } from "next/navigation";
 import { addCommentOrReply } from "../functions/textBox";
 
 export default function TextBox({
+  comments,
+  setComments,
   setReplyTo,
   replyTo,
 }: {
+  comments: any;
+  setComments: any;
   setReplyTo: (value: string) => void;
   replyTo: string;
 }) {
-  const router = useRouter();
   const [content, setContent] = useState("");
 
   const handleSubmit = async (e: any) => {
-    if (replyTo) {
-      console.log("respuesta", replyTo);
-    }
     e.preventDefault();
+
     if (!content) {
       alert("Escribe algo perra");
       return;
     }
-    const addCommentorReply = await addCommentOrReply(content, replyTo);
-    if (addCommentorReply) {
+
+    const addedCommentOrReply = await addCommentOrReply(content, replyTo);
+    console.log(addedCommentOrReply);
+
+    if (addedCommentOrReply) {
       setContent("");
-      router.refresh();
+      console.log("addedCommentOrReply", addedCommentOrReply);
+
+      if (replyTo) {
+        const updatedComments = comments.map((comment: any) => {
+          if (comment._id === replyTo) {
+            return {
+              ...comment,
+              replies: [...comment.replies, addedCommentOrReply],
+            };
+          }
+          console.log("comment", comment);
+          return comment;
+        });
+        setComments(updatedComments); // Esto actualiza el estado de tus comentarios
+      } else {
+        setComments([...comments, addedCommentOrReply]);
+      }
+
+      setReplyTo("");
     }
   };
 

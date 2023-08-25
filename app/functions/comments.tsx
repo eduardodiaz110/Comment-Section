@@ -14,7 +14,6 @@ export async function addScore(id: string) {
 
     if (response.ok) {
       const data = await response.json();
-      console.log(data);
 
       const currentScore = data.comment || data.reply;
 
@@ -37,7 +36,7 @@ export async function addScore(id: string) {
 
       if (updateResponse.ok) {
         // El score se actualizó correctamente
-        return true;
+        return updatedScore;
       } else {
         // Manejar errores de la solicitud PUT
         console.log("Error solicitud PUT");
@@ -91,7 +90,7 @@ export async function minusScore(id: string) {
 
       if (updateResponse.ok) {
         // El score se actualizó correctamente
-        return true;
+        return updatedScore;
       } else {
         // Manejar errores de la solicitud PUT
         console.log("Error solicitud PUT");

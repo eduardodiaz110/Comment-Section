@@ -5,36 +5,49 @@ import Comments from "../../../models/comments";
 export async function POST(request) {
   const { content, replyingTo, score, user } = await request.json();
   await connectMongoDB();
-  console.log("POST created");
 
-  if (replyingTo) {
-    const parentComment = await Comments.findById(replyingTo);
-    if (!parentComment) {
+  try {
+    if (replyingTo) {
+      const parentComment = await Comments.findById(replyingTo);
+      if (!parentComment) {
+        return NextResponse.json(
+          { message: "Parent Comment not found" },
+          { status: 404 }
+        );
+      }
+      const newReply = { content, score, user };
+      parentComment.replies.push(newReply);
+      await parentComment.save(); // Cuando le das a .save(), se ejecutan las reglas que establecimos en el modelo, si alguna de estas falla, tira un error y por lo tanto llega al catch de la funcion y devuelve un error a traves de la API
+
+      newReply._id =
+        parentComment.replies[parentComment.replies.length - 1]._id;
+
+      return NextResponse.json(newReply, { status: 201 }); // El status 201 es "Created successfully"
+    } else {
+      const newComment = await Comments.create({ content, score, user });
+
+      return NextResponse.json(newComment, { status: 201 });
+    }
+  } catch (error) {
+    // Si hay un error de validación de Mongoose
+
+    if (error instanceof mongoose.Error.ValidationError) {
+      // Devuelve un error con detalles sobre la validación
       return NextResponse.json(
-        { message: "Parent Comment not found" },
-        { status: 404 }
+        { message: "Validation failed", details: error.errors },
+        { status: 400 } // 400 es http error de bad request, significa que el cliente no mando bien la informacion
       );
     }
-    const newReply = { content, score, user };
-    parentComment.replies.push(newReply);
-    await parentComment.save();
-
-    // Get the _id of the newly created reply. It should be the last element in the array
-    newReply._id = parentComment.replies[parentComment.replies.length - 1]._id;
-
-    // Return the newly created reply including its _id
-    return NextResponse.json(newReply, { status: 201 });
-  } else {
-    const newComment = await Comments.create({ content, score, user });
-
-    // Return the newly created comment including its _id
-    return NextResponse.json(newComment, { status: 201 });
+    // Para otros tipos de errores, devuelve un error genérico
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    ); // 500 es de server error, se manda cuando no tienes idea de que pudo haber salido mal
   }
 }
 
 export async function GET() {
   await connectMongoDB();
-  console.log("GET created2");
 
   const comments = await Comments.find();
   return NextResponse.json({ comments });
@@ -42,10 +55,8 @@ export async function GET() {
 
 export async function DELETE(request) {
   const id = request.nextUrl.searchParams.get("id");
-  console.log(`Trying to delete ID: ${id}`); // Debug log
 
   await connectMongoDB(); // Make sure to call the function here.
-  console.log("DELETE created");
 
   const comment = await Comments.findById(id);
 

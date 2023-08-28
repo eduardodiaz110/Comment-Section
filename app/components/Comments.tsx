@@ -1,5 +1,3 @@
-"use client";
-
 import { CommentsInterface, RepliesInterface } from "@/interfaces/interfaces";
 import { Box, Typography, IconButton } from "@mui/material";
 import {
@@ -8,36 +6,124 @@ import {
   HiMiniArrowUturnLeft,
   HiMiniTrash,
 } from "react-icons/hi2";
-import { addScore, minusScore } from "../functions/comments.button";
+import {
+  addScore,
+  minusScore,
+  deleteCommentOrReply,
+  replyToComment,
+} from "../functions/comments";
 import { useRouter } from "next/navigation";
 
 interface CommentsProps {
   comment: CommentsInterface;
 }
 
-export default function Comments({ comment }: CommentsProps) {
-  const router = useRouter();
-
+export default function Comments({
+  comments,
+  setComments,
+  comment,
+  setReplyTo,
+}: {
+  comments: any;
+  setComments: any;
+  comment: CommentsInterface;
+  setReplyTo: (id: string) => void;
+}) {
   const handleAddScore = async (id: string) => {
-    const wasUpdated = await addScore(id);
-    if (wasUpdated) {
-      router.refresh();
+    const updatedScore = await addScore(id);
+    if (updatedScore !== undefined && updatedScore !== null) {
+      setComments((prevComments: any) => {
+        return prevComments.map((comment: any) => {
+          if (comment._id === id) {
+            // Si el ID coincide con un comentario principal
+            return { ...comment, score: updatedScore };
+          }
+
+          // Si el ID no coincide con un comentario principal, buscamos en las respuestas
+          if (comment.replies) {
+            const updatedReplies = comment.replies.map((reply: any) => {
+              if (reply._id === id) {
+                return { ...reply, score: updatedScore };
+              }
+              return reply;
+            });
+            return { ...comment, replies: updatedReplies };
+          }
+
+          return comment; // Si no se encuentra el ID en los comentarios ni en las respuestas
+        });
+      });
     }
   };
 
   const handleMinusScore = async (id: string) => {
-    const wasUpdated = await minusScore(id);
-    if (wasUpdated) {
-      router.refresh();
+    const updatedScore = await minusScore(id);
+    if (updatedScore !== undefined && updatedScore !== null) {
+      setComments((prevComments: any) => {
+        return prevComments.map((comment: any) => {
+          if (comment._id === id) {
+            // Si el ID coincide con un comentario principal
+            return { ...comment, score: updatedScore };
+          }
+
+          // Si el ID no coincide con un comentario principal, buscamos en las respuestas
+          if (comment.replies) {
+            const updatedReplies = comment.replies.map((reply: any) => {
+              if (reply._id === id) {
+                return { ...reply, score: updatedScore };
+              }
+              return reply;
+            });
+            return { ...comment, replies: updatedReplies };
+          }
+
+          return comment; // Si no se encuentra el ID en los comentarios ni en las respuestas
+        });
+      });
     }
   };
 
-  // const handleDelete = async (id: string) => {
-  //   const wasUpdated = await minusScore(id);
-  //   if (wasUpdated) {
-  //     router.refresh();
-  //   }
-  // };
+  const handleDelete = async (id: string) => {
+    const wasDeleted = await deleteCommentOrReply(id);
+    if (wasDeleted) {
+      setComments((prevComments: any) => {
+        // Busca si el ID pertenece a un comentario
+        const isComment = prevComments.some(
+          (comment: any) => comment._id === id
+        );
+
+        if (isComment) {
+          // Si es un comentario, elimínalo
+          return prevComments.filter((comment: any) => comment._id !== id);
+        } else {
+          // Si no es un comentario, podría ser una respuesta. Actualiza el comentario que contiene esa respuesta
+          return prevComments.map((comment: any) => {
+            if (comment.replies.some((reply: any) => reply._id === id)) {
+              return {
+                ...comment,
+                replies: comment.replies.filter(
+                  (reply: any) => reply._id !== id
+                ),
+              };
+            }
+            return comment;
+          });
+        }
+      });
+    }
+  };
+
+  const handleReply = async (replyTo: string) => {
+    const sectionElement = document.getElementById("textBox");
+
+    // Si el elemento existe, desplázate hasta él
+    if (sectionElement) {
+      sectionElement.scrollIntoView({ behavior: "smooth" });
+      setReplyTo(replyTo);
+    } else {
+      console.error(`Elemento con ID "textBox" no encontrado.`);
+    }
+  };
 
   return (
     <Box key={comment._id}>
@@ -84,22 +170,21 @@ export default function Comments({ comment }: CommentsProps) {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              {comment.user.map((u) => (
-                <Typography fontWeight={600} sx={{ color: "#404953" }}>
-                  {u.username}
-                </Typography>
-              ))}
+              <Typography fontWeight={600} sx={{ color: "#404953" }}>
+                {comment.user.username}
+              </Typography>
               <Typography
                 sx={{ marginLeft: "20px", color: "#75787c" }}
                 fontWeight={500}
               >
-                {comment.createdAt.toLocaleUpperCase()}
+                {comment.createdAt}
               </Typography>
             </Box>
 
             <Box sx={{ display: "flex" }}>
               <IconButton
                 style={{ color: "#595fb0", padding: "2px", marginTop: "-3px" }}
+                onClick={() => handleReply(comment._id)}
               >
                 <HiMiniArrowUturnLeft size="15px" />
                 <Typography
@@ -110,6 +195,7 @@ export default function Comments({ comment }: CommentsProps) {
                 </Typography>
               </IconButton>
               <IconButton
+                onClick={() => handleDelete(comment._id)}
                 style={{
                   color: "#595fb0",
                   padding: "2px",
@@ -135,7 +221,7 @@ export default function Comments({ comment }: CommentsProps) {
         </Box>
       </Box>
 
-      {comment.replies && comment.replies.length > 0 ? (
+      {comment.replies ? (
         //Box para Linea gris de la izq
         <Box
           sx={{
@@ -199,16 +285,14 @@ export default function Comments({ comment }: CommentsProps) {
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center" }}>
-                    {reply.user.map((u) => (
-                      <Typography fontWeight={600} sx={{ color: "#404953" }}>
-                        {u.username}
-                      </Typography>
-                    ))}
+                    <Typography fontWeight={600} sx={{ color: "#404953" }}>
+                      {reply.user.username}
+                    </Typography>
                     <Typography
                       sx={{ marginLeft: "20px", color: "#75787c" }}
                       fontWeight={500}
                     >
-                      {reply.createdAt.toLocaleUpperCase()}
+                      {reply.createdAt}
                     </Typography>
                   </Box>
 
@@ -219,15 +303,33 @@ export default function Comments({ comment }: CommentsProps) {
                         padding: "2px",
                         marginTop: "-3px",
                       }}
+                      onClick={() => handleReply(comment._id)}
                     >
                       <HiMiniArrowUturnLeft size="15px" />
+                      <Typography
+                        sx={{ marginLeft: "5px", color: "#595fb0" }}
+                        fontWeight={600}
+                      >
+                        Reply
+                      </Typography>
                     </IconButton>
-                    <Typography
-                      sx={{ marginLeft: "5px", color: "#595fb0" }}
-                      fontWeight={600}
+                    <IconButton
+                      onClick={() => handleDelete(reply._id)}
+                      style={{
+                        color: "#595fb0",
+                        padding: "2px",
+                        paddingLeft: "10px",
+                        marginTop: "-3px",
+                      }}
                     >
-                      Reply
-                    </Typography>
+                      <HiMiniTrash size="15px" />
+                      <Typography
+                        sx={{ marginLeft: "5px", color: "#595fb0" }}
+                        fontWeight={600}
+                      >
+                        Delete
+                      </Typography>
+                    </IconButton>
                   </Box>
                 </Box>
                 <Box sx={{ pt: "7px" }}>

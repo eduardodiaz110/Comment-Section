@@ -1,8 +1,27 @@
-// import { Typography, Grid, Box, TextField, Button } from "@mui/material";
+"use client";
+import { CommentsInterface } from "@/interfaces/interfaces";
+import Comments from "./Comments";
+import { Typography, Grid } from "@mui/material";
+import { getComments } from "../functions/commentsList";
 
-// export default function prueba() {
-//   const click = () => {
-//     console.log("hola");
-//   };
-//   return <Button onClick={click}>Click</Button>;
-// }
+export default async function Prueba() {
+  const { comments } = await getComments();
+
+  return (
+    <Grid container maxWidth={"700px"}>
+      {comments.map((comment: CommentsInterface) => (
+        <Grid
+          item
+          xs={12}
+          md={12}
+          lg={12}
+          xl={12}
+          key={comment._id}
+          sx={{ justifyContent: "center", alignItems: "center" }}
+        >
+          <Typography>{comment.content}</Typography>
+        </Grid>
+      ))}
+    </Grid>
+  );
+}

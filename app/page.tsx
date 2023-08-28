@@ -1,6 +1,6 @@
+"use client";
 import { Typography, Container } from "@mui/material";
-import CommentsList from "./components/CommentsList";
-import TextBox from "./components/TextBox";
+import CommentSection from "./CommentSection";
 
 export default function Home() {
   return (
@@ -16,9 +16,8 @@ export default function Home() {
         <Typography variant="h1" pb={"30px"} style={{ textAlign: "center" }}>
           Comments Section
         </Typography>
-        <CommentsList />
-        <TextBox />
-        {/* <Prueba /> */}
+
+        <CommentSection />
       </Container>
     </>
   );

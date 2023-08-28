@@ -5,7 +5,7 @@ const userSchema = new Schema(
     image: String,
     username: String,
   },
-  { _id: false }
+  { timestamps: true }
 );
 
 const repliesSchema = new Schema(
@@ -13,7 +13,7 @@ const repliesSchema = new Schema(
     content: String,
     score: Number,
     replyingTo: { type: Schema.Types.ObjectId, ref: "Comment" },
-    user: [userSchema],
+    user: userSchema,
   },
   {
     timestamps: true,
@@ -24,7 +24,7 @@ const commentsSchema = new Schema(
   {
     content: String,
     score: Number,
-    user: [userSchema],
+    user: userSchema,
     replies: [repliesSchema],
   },
   {

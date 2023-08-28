@@ -2,8 +2,8 @@ export interface CommentsInterface {
   _id: string;
   content: string;
   score: number;
-  user: [UserInterface];
-  replies: [RepliesInterface];
+  user: UserInterface;
+  replies: RepliesInterface[];
   createdAt: string;
 }
 
@@ -17,6 +17,6 @@ export interface RepliesInterface {
   content: string;
   score: number;
   replyingTo: string;
-  user: [UserInterface];
+  user: UserInterface;
   createdAt: string;
 }

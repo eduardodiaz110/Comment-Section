@@ -5,7 +5,7 @@ const userSchema = new Schema(
     image: String,
     username: String,
   },
-  { _id: false }
+  { timestamps: true }
 );
 
 const repliesSchema = new Schema(

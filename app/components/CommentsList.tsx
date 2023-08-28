@@ -21,10 +21,11 @@ export default function CommentsList({
           md={12}
           lg={12}
           xl={12}
-          key={comment._id}
           sx={{ justifyContent: "center", alignItems: "center" }}
+          key={`commentList2-${comment._id}`}
         >
           <Comments
+            key={`commentList1-${comment._id}`}
             comments={comments}
             setComments={setComments}
             comment={comment}

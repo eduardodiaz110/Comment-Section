@@ -126,7 +126,7 @@ export default function Comments({
   };
 
   return (
-    <Box key={comment._id}>
+    <Box key={`commentId-${comment._id}`}>
       <Box
         my={"15px"}
         px={"20px"}
@@ -242,6 +242,7 @@ export default function Comments({
                 borderRadius: "10px",
                 display: "flex",
               }}
+              key={`replyId-${comment._id}`}
             >
               <Box
                 sx={{

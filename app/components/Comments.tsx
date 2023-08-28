@@ -1,4 +1,4 @@
-import { CommentsInterface, RepliesInterface } from "@/interfaces/interfaces";
+import { CommentsInterface, RepliesInterface } from "@/types/interfaces";
 import { Box, Typography, IconButton } from "@mui/material";
 import {
   HiMiniPlus,

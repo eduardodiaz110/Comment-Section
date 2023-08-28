@@ -1,21 +1,15 @@
 import { useEffect, useState } from "react";
 import CommentsList from "./components/CommentsList";
 import TextBox from "./components/TextBox";
-import { getComments } from "./functions/commentsList";
-import { CommentsInterface } from "@/interfaces/interfaces";
 
-export default function commentSection() {
+export default function CommentSection({
+  comments,
+  setComments,
+}: {
+  comments: any;
+  setComments: any;
+}) {
   const [replyTo, setReplyTo] = useState("");
-  const [comments, setComments] = useState<CommentsInterface[]>([]);
-
-  useEffect(() => {
-    async function fetchComments() {
-      const fetchedComments = await getComments();
-      setComments(fetchedComments.comments);
-    }
-
-    fetchComments();
-  }, []);
 
   useEffect(() => {
     console.log("replyTo", replyTo);

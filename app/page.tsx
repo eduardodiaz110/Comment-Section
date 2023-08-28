@@ -1,8 +1,22 @@
 "use client";
+import { useEffect, useState } from "react";
+import { getComments } from "./functions/commentsList";
 import { Typography, Container } from "@mui/material";
 import CommentSection from "./CommentSection";
+import { CommentsInterface } from "@/types/interfaces";
 
 export default function Home() {
+  const [comments, setComments] = useState<CommentsInterface[]>([]);
+
+  useEffect(() => {
+    async function fetchComments() {
+      const fetchedComments = await getComments();
+      setComments(fetchedComments.comments);
+    }
+
+    fetchComments();
+  }, []);
+
   return (
     <>
       <Container
@@ -17,7 +31,7 @@ export default function Home() {
           Comments Section
         </Typography>
 
-        <CommentSection />
+        <CommentSection comments={comments} setComments={setComments} />
       </Container>
     </>
   );

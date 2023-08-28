@@ -6,7 +6,6 @@ export async function PUT(request, { params }) {
   const { id } = params;
   const requestBody = await request.json();
   await connectMongoDB();
-  console.log("PUT created [id]");
 
   let updateFields = {};
 
@@ -45,7 +44,6 @@ export async function PUT(request, { params }) {
 export async function GET(request, { params }) {
   const { id } = params;
   await connectMongoDB();
-  console.log("GET created [id]");
 
   const comment = await Comments.findOne({ _id: id });
   if (!comment) {

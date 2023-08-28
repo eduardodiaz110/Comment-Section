@@ -1,4 +1,4 @@
-import { CommentsInterface } from "@/interfaces/interfaces";
+import { CommentsInterface } from "@/types/interfaces";
 import Comments from "./Comments";
 import { Typography, Grid } from "@mui/material";
 import { getComments } from "../functions/commentsList";

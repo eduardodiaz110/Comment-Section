@@ -1,4 +1,8 @@
-export async function addCommentOrReply(content: string, replyTo?: string) {
+export async function addCommentOrReply(
+  userId: string,
+  content: string,
+  replyTo?: string
+) {
   try {
     // Determina el body dependiendo de si es una respuesta o un comentario principal
     const bodyData = replyTo
@@ -6,18 +10,12 @@ export async function addCommentOrReply(content: string, replyTo?: string) {
           content,
           score: 0,
           replyingTo: replyTo,
-          user: {
-            image: "imagen.png",
-            username: "eduardo",
-          },
+          userId,
         }
       : {
           content,
           score: 0,
-          user: {
-            image: "imagen.png",
-            username: "eduardo",
-          },
+          userId,
         };
 
     const res = await fetch("http://localhost:3000/api/comments", {

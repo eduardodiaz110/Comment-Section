@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getComments } from "./functions/commentsList";
+import { getComments } from "./functions/home";
 import { Typography, Container } from "@mui/material";
 import CommentSection from "./CommentSection";
 import { CommentsInterface } from "@/types/interfaces";
@@ -19,6 +19,7 @@ export default function Home() {
 
   return (
     <>
+      {/* <pre>{JSON.stringify(comments, null, 2)}</pre> */}
       <Container
         sx={{
           display: "flex",

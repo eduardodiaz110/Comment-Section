@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import ThemeRegistry from "../config/ThemeRegistry";
+import Providers from "../app/Provider";
 
 export const metadata: Metadata = {
   title: "Comments Section",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeRegistry options={{ key: "mui" }}>{children}</ThemeRegistry>
+        <Providers>
+          <ThemeRegistry options={{ key: "mui" }}>{children}</ThemeRegistry>
+        </Providers>
       </body>
     </html>
   );

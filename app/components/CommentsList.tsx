@@ -1,7 +1,7 @@
 import { CommentsInterface } from "@/types/interfaces";
 import Comments from "./Comments";
 import { Typography, Grid } from "@mui/material";
-import { getComments } from "../functions/commentsList";
+import { getComments } from "../functions/home";
 
 export default function CommentsList({
   comments,

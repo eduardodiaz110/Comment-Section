@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import connectMongoDB from "../../../../libs/mongodb";
-import Comments from "../../../../models/comments";
+import { Comments } from "../../../../models/comments";
 
 export async function PUT(request, { params }) {
   const { id } = params;

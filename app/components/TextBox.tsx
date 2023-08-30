@@ -3,6 +3,11 @@ import { Typography, Grid, Box, TextField, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { addCommentOrReply } from "../functions/textBox";
+import { useSession } from "next-auth/react";
+
+interface CustomUser {
+  _id?: string;
+}
 
 export default function TextBox({
   comments,
@@ -15,6 +20,10 @@ export default function TextBox({
   setReplyTo: (value: string) => void;
   replyTo: string;
 }) {
+  const { data: session, status } = useSession() as {
+    data: { user: CustomUser };
+    status: string;
+  };
   const [content, setContent] = useState("");
 
   const handleSubmit = async (e: any) => {
@@ -25,7 +34,11 @@ export default function TextBox({
       return;
     }
 
-    const addedCommentOrReply = await addCommentOrReply(content, replyTo);
+    const addedCommentOrReply = await addCommentOrReply(
+      session.user._id as string,
+      content,
+      replyTo
+    );
 
     if (addedCommentOrReply) {
       setContent("");
@@ -42,6 +55,7 @@ export default function TextBox({
         });
         setComments(updatedComments); // Esto actualiza el estado de tus comentarios
       } else {
+        console.log(addedCommentOrReply);
         setComments([...comments, addedCommentOrReply]);
       }
 
@@ -55,6 +69,7 @@ export default function TextBox({
 
   return (
     <>
+      <pre>{JSON.stringify(session, null, 2)}</pre>
       <Box
         maxWidth={"700px"}
         my={"15px"}

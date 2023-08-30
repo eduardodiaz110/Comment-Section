@@ -69,7 +69,7 @@ export default function TextBox({
 
   return (
     <>
-      <pre>{JSON.stringify(session, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
       <Box
         maxWidth={"700px"}
         my={"15px"}

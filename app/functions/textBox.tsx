@@ -22,7 +22,7 @@ export async function addCommentOrReply(
       bodyData.replyingTo = replyTo;
     }
 
-    const res = await fetch("${process.env.NEXTAUTH_URL}/api/comments", {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/comments`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

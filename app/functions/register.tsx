@@ -10,7 +10,7 @@ export async function addUser(
       password,
     };
 
-    const res = await fetch("${process.env.NEXTAUTH_URL}/api/auth/signup", {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/signup`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

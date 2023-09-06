@@ -142,7 +142,7 @@ export async function replyToComment(replyTo: string) {
     return;
   }
   try {
-    const res = await fetch("${process.env.NEXTAUTH_URL}/api/comments/", {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/comments/`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

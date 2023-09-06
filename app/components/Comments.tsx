@@ -27,7 +27,7 @@ export default function Comments({
   comments: any;
   setComments: any;
   comment: CommentsInterface;
-  setReplyTo: (id: string) => void;
+  setReplyTo: (replyTo: CommentsInterface | undefined) => void;
 }) {
   const handleAddScore = async (id: string) => {
     const updatedScore = await addScore(id);
@@ -113,7 +113,7 @@ export default function Comments({
     }
   };
 
-  const handleReply = async (replyTo: string) => {
+  const handleReply = async (replyTo: CommentsInterface) => {
     const sectionElement = document.getElementById("textBox");
 
     // Si el elemento existe, desplázate hasta él
@@ -184,7 +184,7 @@ export default function Comments({
             <Box sx={{ display: "flex" }}>
               <IconButton
                 style={{ color: "#595fb0", padding: "2px", marginTop: "-3px" }}
-                onClick={() => handleReply(comment._id)}
+                onClick={() => handleReply(comment)}
               >
                 <HiMiniArrowUturnLeft size="15px" />
                 <Typography
@@ -242,7 +242,7 @@ export default function Comments({
                 borderRadius: "10px",
                 display: "flex",
               }}
-              key={`replyId-${comment._id}`}
+              key={`replyId-${reply._id}`}
             >
               <Box
                 sx={{
@@ -304,7 +304,7 @@ export default function Comments({
                         padding: "2px",
                         marginTop: "-3px",
                       }}
-                      onClick={() => handleReply(comment._id)}
+                      onClick={() => handleReply(comment)}
                     >
                       <HiMiniArrowUturnLeft size="15px" />
                       <Typography

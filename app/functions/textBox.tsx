@@ -1,26 +1,28 @@
-export async function addCommentOrReply(content: string, replyTo?: string) {
+interface CommentData {
+  content: string;
+  score: number;
+  userId: string;
+  replyingTo?: string;
+}
+
+export async function addCommentOrReply(
+  userId: string,
+  content: string,
+  replyTo?: string | undefined
+) {
   try {
     // Determina el body dependiendo de si es una respuesta o un comentario principal
-    const bodyData = replyTo
-      ? {
-          content,
-          score: 0,
-          replyingTo: replyTo,
-          user: {
-            image: "imagen.png",
-            username: "eduardo",
-          },
-        }
-      : {
-          content,
-          score: 0,
-          user: {
-            image: "imagen.png",
-            username: "eduardo",
-          },
-        };
+    const bodyData: CommentData = {
+      content,
+      score: 0,
+      userId,
+    };
 
-    const res = await fetch("http://localhost:3000/api/comments", {
+    if (replyTo) {
+      bodyData.replyingTo = replyTo;
+    }
+
+    const res = await fetch("${process.env.NEXTAUTH_URL}/api/comments", {
       method: "POST",
       headers: {
         "Content-type": "application/json",

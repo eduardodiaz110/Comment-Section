@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import connectMongoDB from "../../../libs/mongodb";
-import Comments from "../../../models/comments";
+import { Comments } from "../../models/comments";
+import User from "@/app/models/user";
+
+import mongoose from "mongoose";
 
 export async function POST(request) {
-  const { content, replyingTo, score, user } = await request.json();
+  const { content, replyingTo, score, userId } = await request.json();
   await connectMongoDB();
 
   try {
@@ -15,18 +18,65 @@ export async function POST(request) {
           { status: 404 }
         );
       }
-      const newReply = { content, score, user };
-      parentComment.replies.push(newReply);
-      await parentComment.save(); // Cuando le das a .save(), se ejecutan las reglas que establecimos en el modelo, si alguna de estas falla, tira un error y por lo tanto llega al catch de la funcion y devuelve un error a traves de la API
 
+      // Crear un nuevo objeto de respuesta
+      const newReply = {
+        _id: new mongoose.Types.ObjectId(),
+        content,
+        score,
+        user: userId,
+      };
+      parentComment.replies.push(newReply);
+      await parentComment.save();
+
+      // Obtener el ID del nuevo reply
       newReply._id =
         parentComment.replies[parentComment.replies.length - 1]._id;
 
-      return NextResponse.json(newReply, { status: 201 }); // El status 201 es "Created successfully"
-    } else {
-      const newComment = await Comments.create({ content, score, user });
+      // Obtener la fecha de creación del nuevo reply
+      newReply.createdAt =
+        parentComment.replies[parentComment.replies.length - 1].createdAt;
 
-      return NextResponse.json(newComment, { status: 201 });
+      // Buscar el usuario correspondiente al userId
+      const user = await User.findById(userId);
+
+      // Verificar si el usuario existe
+      if (!user) {
+        return NextResponse.json(
+          { message: "User not found" },
+          { status: 404 }
+        );
+      }
+
+      // Añadir el username al nuevo reply antes de devolverlo
+      const newReplyWithDetails = {
+        ...newReply,
+        user: {
+          _id: userId,
+          username: user.username, // Añadir el username
+        },
+      };
+
+      return NextResponse.json(newReplyWithDetails, { status: 201 }); // El status 201 es "Created successfully"
+    } else {
+      const newComment = await Comments.create({
+        content,
+        score,
+        user: userId,
+      });
+
+      const user = await User.findById(userId);
+
+      // Añadir el username al nuevo comentario antes de devolverlo
+      const newCommentWithUsername = {
+        ...newComment._doc, // Desestructurar el documento para poder modificarlo
+        user: {
+          ...newComment._doc.user,
+          username: user.username, // Añadir el username
+        },
+      };
+
+      return NextResponse.json(newCommentWithUsername, { status: 201 });
     }
   } catch (error) {
     // Si hay un error de validación de Mongoose
@@ -38,9 +88,16 @@ export async function POST(request) {
         { status: 400 } // 400 es http error de bad request, significa que el cliente no mando bien la informacion
       );
     }
+
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { message: "Duplicate key error", details: error.keyValue },
+        { status: 409 } // 409 es un código de estado HTTP para conflictos
+      );
+    }
     // Para otros tipos de errores, devuelve un error genérico
     return NextResponse.json(
-      { message: "Internal server error" },
+      { message: "Internal server error", error },
       { status: 500 }
     ); // 500 es de server error, se manda cuando no tienes idea de que pudo haber salido mal
   }
@@ -48,8 +105,10 @@ export async function POST(request) {
 
 export async function GET() {
   await connectMongoDB();
-
-  const comments = await Comments.find();
+  const comments = await Comments.find().populate("user").populate({
+    path: "replies.user",
+    model: "User",
+  });
   return NextResponse.json({ comments });
 }
 

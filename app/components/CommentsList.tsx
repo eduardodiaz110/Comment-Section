@@ -1,7 +1,7 @@
 import { CommentsInterface } from "@/types/interfaces";
 import Comments from "./Comments";
 import { Typography, Grid } from "@mui/material";
-import { getComments } from "../functions/commentsList";
+import { getComments } from "../functions/home";
 
 export default function CommentsList({
   comments,
@@ -10,7 +10,7 @@ export default function CommentsList({
 }: {
   comments: any;
   setComments: any;
-  setReplyTo: (value: string) => void;
+  setReplyTo: (replyTo: CommentsInterface | undefined) => void;
 }) {
   return (
     <Grid container spacing={2} maxWidth={"700px"}>

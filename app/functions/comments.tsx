@@ -5,12 +5,15 @@ export async function addScore(id: string) {
   }
   try {
     // Hacer una solicitud GET para obtener los detalles del comentario
-    const response = await fetch(`http://localhost:3000/api/comments/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/comments/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
 
     if (response.ok) {
       const data = await response.json();
@@ -22,7 +25,7 @@ export async function addScore(id: string) {
 
       // Realizar la solicitud PUT para actualizar el score
       const updateResponse = await fetch(
-        `http://localhost:3000/api/comments/${id}`,
+        `${process.env.NEXTAUTH_URL}/api/comments/${id}`,
         {
           method: "PUT",
           headers: {
@@ -58,12 +61,15 @@ export async function minusScore(id: string) {
   }
   try {
     // Hacer una solicitud GET para obtener los detalles del comentario
-    const response = await fetch(`http://localhost:3000/api/comments/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/comments/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
 
     if (response.ok) {
       const data = await response.json();
@@ -75,7 +81,7 @@ export async function minusScore(id: string) {
 
       // Realizar la solicitud PUT para actualizar el score
       const updateResponse = await fetch(
-        `http://localhost:3000/api/comments/${id}`,
+        `${process.env.NEXTAUTH_URL}/api/comments/${id}`,
         {
           method: "PUT",
           headers: {
@@ -112,7 +118,7 @@ export async function deleteCommentOrReply(id: string) {
   try {
     // Hacer una solicitud GET para obtener los detalles del comentario
     const response = await fetch(
-      `http://localhost:3000/api/comments/?id=${id}`,
+      `${process.env.NEXTAUTH_URL}/api/comments/?id=${id}`,
       {
         method: "DELETE",
         headers: {
@@ -136,7 +142,7 @@ export async function replyToComment(replyTo: string) {
     return;
   }
   try {
-    const res = await fetch("http://localhost:3000/api/comments/", {
+    const res = await fetch("${process.env.NEXTAUTH_URL}/api/comments/", {
       method: "POST",
       headers: {
         "Content-type": "application/json",

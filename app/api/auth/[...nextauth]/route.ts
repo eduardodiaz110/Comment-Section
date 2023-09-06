@@ -1,7 +1,7 @@
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectMongoDB from "@/libs/mongodb";
-import { User } from "@/models/comments";
+import User from "@/app/models/user";
 import bcrypt from "bcryptjs";
 
 const handler = NextAuth({
@@ -18,7 +18,6 @@ const handler = NextAuth({
       },
       async authorize(credentials, req) {
         await connectMongoDB();
-        console.log(credentials);
         const userFound = await User.findOne({
           email: credentials?.email,
         }).select("+password");

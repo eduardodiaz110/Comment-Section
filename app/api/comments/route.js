@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import connectMongoDB from "../../../libs/mongodb";
-import { Comments } from "../../../models/comments";
+import { Comments } from "../../models/comments";
+import User from "@/app/models/user";
+
 import mongoose from "mongoose";
-import { User } from "../../../models/comments";
 
 export async function POST(request) {
   const { content, replyingTo, score, userId } = await request.json();
-  console.log("request", content, replyingTo, score, userId);
   await connectMongoDB();
 
   try {
@@ -20,7 +20,12 @@ export async function POST(request) {
       }
 
       // Crear un nuevo objeto de respuesta
-      const newReply = { content, score, user: userId };
+      const newReply = {
+        _id: new mongoose.Types.ObjectId(),
+        content,
+        score,
+        user: userId,
+      };
       parentComment.replies.push(newReply);
       await parentComment.save();
 
@@ -100,9 +105,10 @@ export async function POST(request) {
 
 export async function GET() {
   await connectMongoDB();
-  const comments = await Comments.find()
-    .populate("user")
-    .populate("replies.user");
+  const comments = await Comments.find().populate("user").populate({
+    path: "replies.user",
+    model: "User",
+  });
   return NextResponse.json({ comments });
 }
 

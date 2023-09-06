@@ -10,7 +10,7 @@ export default function CommentsList({
 }: {
   comments: any;
   setComments: any;
-  setReplyTo: (value: string) => void;
+  setReplyTo: (replyTo: CommentsInterface | undefined) => void;
 }) {
   return (
     <Grid container spacing={2} maxWidth={"700px"}>

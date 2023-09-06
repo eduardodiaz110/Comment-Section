@@ -1,9 +1,10 @@
 "use client";
-import { Typography, Grid, Box, TextField, Button } from "@mui/material";
+import { Typography, Box, TextField, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { addCommentOrReply } from "../functions/textBox";
 import { useSession } from "next-auth/react";
+import { HiMiniChatBubbleLeft } from "react-icons/hi2";
+import { CommentsInterface } from "@/types/interfaces";
 
 interface CustomUser {
   _id?: string;
@@ -17,13 +18,14 @@ export default function TextBox({
 }: {
   comments: any;
   setComments: any;
-  setReplyTo: (value: string) => void;
-  replyTo: string;
+  setReplyTo: (replyTo: CommentsInterface | undefined) => void;
+  replyTo: CommentsInterface | undefined;
 }) {
-  const { data: session, status } = useSession() as {
+  const { data: session } = useSession() as {
     data: { user: CustomUser };
     status: string;
   };
+
   const [content, setContent] = useState("");
 
   const handleSubmit = async (e: any) => {
@@ -37,7 +39,7 @@ export default function TextBox({
     const addedCommentOrReply = await addCommentOrReply(
       session.user._id as string,
       content,
-      replyTo
+      replyTo?._id
     );
 
     if (addedCommentOrReply) {
@@ -45,7 +47,7 @@ export default function TextBox({
 
       if (replyTo) {
         const updatedComments = comments.map((comment: any) => {
-          if (comment._id === replyTo) {
+          if (comment._id === replyTo._id) {
             return {
               ...comment,
               replies: [...comment.replies, addedCommentOrReply],
@@ -55,21 +57,42 @@ export default function TextBox({
         });
         setComments(updatedComments); // Esto actualiza el estado de tus comentarios
       } else {
-        console.log(addedCommentOrReply);
         setComments([...comments, addedCommentOrReply]);
       }
 
-      setReplyTo("");
+      setReplyTo(undefined);
     }
   };
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
   };
 
   return (
     <>
-      {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
+      {replyTo ? (
+        <Box
+          maxWidth={"695px"}
+          paddingTop={"10px"}
+          paddingBottom={"25px"}
+          marginBottom={"-35px"}
+          px={"20px"}
+          sx={{
+            backgroundColor: "#595fb0",
+            borderRadius: "10px",
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "left",
+          }}
+        >
+          <HiMiniChatBubbleLeft color="white" size="16px" />
+
+          <Typography sx={{ color: "white", paddingLeft: "7px" }}>
+            Respondiendo a {replyTo.user.username}
+          </Typography>
+        </Box>
+      ) : null}
+
       <Box
         maxWidth={"700px"}
         my={"15px"}

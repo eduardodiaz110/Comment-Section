@@ -1,47 +1,36 @@
 "use client";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import { addUser } from "../functions/register";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function LogInPage() {
   const Router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    username: "",
+  });
 
   const [error, setError] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-
-    switch (name) {
-      case "email":
-        setEmail(value);
-        break;
-      case "password":
-        setPassword(value);
-        break;
-      case "username":
-        setUsername(value);
-        break;
-      default:
-        break;
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const res = await signIn("credentials", {
-      email: email,
-      password: password,
+      email: formData.email,
+      password: formData.password,
       redirect: false,
     });
-
-    console.log(res);
 
     if (res?.error) {
       return setError(res.error as string);
@@ -56,7 +45,7 @@ export default function LogInPage() {
     <div>
       {error && (
         <Box
-          style={{
+          sx={{
             display: "flex",
             backgroundColor: "red",
             alignItems: "center",
@@ -70,7 +59,7 @@ export default function LogInPage() {
         </Box>
       )}
       <Box
-        style={{
+        sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -79,7 +68,7 @@ export default function LogInPage() {
         <h1>Iniciar Sesion</h1>
       </Box>
       <Box
-        style={{
+        sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -88,40 +77,41 @@ export default function LogInPage() {
           gap: "10px",
         }}
       >
-        <Box
-          width="40%"
-          style={{
-            display: "flex",
-            alignContent: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            gap: "10px",
-          }}
-        >
-          <TextField
-            type="email"
-            placeholder="email"
-            name="email"
-            fullWidth
-            onChange={handleChange}
-            value={email}
-          />
-          <TextField
-            type="password "
-            placeholder="password"
-            name="password"
-            fullWidth
-            onChange={handleChange}
-            value={password}
-          />
-          <Button
-            variant="contained"
-            sx={{ width: "100%", height: "50px" }}
-            onClick={handleSubmit}
+        <form onSubmit={handleSubmit} style={{ width: "40%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignContent: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              gap: "10px",
+            }}
           >
-            Iniciar Sesion
-          </Button>
-        </Box>
+            <TextField
+              type="email"
+              placeholder="email"
+              name="email"
+              fullWidth
+              onChange={handleChange}
+              value={formData.email}
+            />
+            <TextField
+              type="password"
+              placeholder="password"
+              name="password"
+              fullWidth
+              onChange={handleChange}
+              value={formData.password}
+            />
+            <Button
+              variant="contained"
+              sx={{ width: "100%", height: "50px" }}
+              type="submit"
+            >
+              Iniciar Sesion
+            </Button>
+          </Box>
+        </form>
       </Box>
     </div>
   );

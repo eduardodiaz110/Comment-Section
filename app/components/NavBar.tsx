@@ -1,10 +1,20 @@
+"use client";
 import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
 import Link from "next/link";
-import React from "react";
-import { getServerSession } from "next-auth";
+import React, { useEffect, useState } from "react";
+import { getSession } from "next-auth/react";
 
-export default async function NavBar() {
-  const session = await getServerSession();
+export default function NavBar() {
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      setSession(sessionData);
+    };
+
+    fetchSession();
+  }, []);
 
   return (
     <Box sx={{ marginBottom: "30px" }}>

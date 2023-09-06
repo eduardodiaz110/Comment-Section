@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { User } from "../../../../models/comments";
+import User from "@/app/models/user";
 import bcrypt from "bcryptjs";
 import connectMongoDB from "../../../../libs/mongodb";
 

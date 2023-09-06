@@ -8,44 +8,40 @@ import { useRouter } from "next/navigation";
 export default function RegisterPage() {
   const Router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    username: "",
+  });
   const [result, setResult] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-
-    switch (name) {
-      case "email":
-        setEmail(value);
-        break;
-      case "password":
-        setPassword(value);
-        break;
-      case "username":
-        setUsername(value);
-        break;
-      default:
-        break;
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const result = await addUser(email, password, username);
-    console.log(result);
+    const result = await addUser(
+      formData.email,
+      formData.password,
+      formData.username
+    );
 
     if (result.includes("Success")) {
       setResult("Usuario creado con éxito");
-      setEmail("");
-      setPassword("");
-      setUsername("");
+      setFormData({
+        email: "",
+        password: "",
+        username: "",
+      });
 
       await signIn("credentials", {
-        email: email,
-        password: password,
+        email: formData.email,
+        password: formData.password,
         redirect: false,
       });
 
@@ -111,7 +107,7 @@ export default function RegisterPage() {
             name="username"
             fullWidth
             onChange={handleChange}
-            value={username}
+            value={formData.username}
           />
           <TextField
             type="email"
@@ -119,7 +115,7 @@ export default function RegisterPage() {
             name="email"
             fullWidth
             onChange={handleChange}
-            value={email}
+            value={formData.email}
           />
           <TextField
             type="password "
@@ -127,7 +123,7 @@ export default function RegisterPage() {
             name="password"
             fullWidth
             onChange={handleChange}
-            value={password}
+            value={formData.password}
           />
           <Button
             variant="contained"

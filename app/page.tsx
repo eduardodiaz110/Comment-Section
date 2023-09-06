@@ -19,7 +19,6 @@ export default function Home() {
 
   return (
     <>
-      {/* <pre>{JSON.stringify(comments, null, 2)}</pre> */}
       <Container
         sx={{
           display: "flex",

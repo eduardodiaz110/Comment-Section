@@ -4,23 +4,37 @@ import { useEffect, useState } from "react";
 import { addCommentOrReply } from "../functions/textBox";
 import { useSession } from "next-auth/react";
 import { HiMiniChatBubbleLeft } from "react-icons/hi2";
-import { CommentsInterface } from "@/types/interfaces";
+import { CommentsInterface, RepliesInterface } from "@/types/interfaces";
 
 interface CustomUser {
   _id?: string;
 }
+
+type TextBoxProps = {
+  comments: CommentsInterface[];
+  setComments: (comments: CommentsInterface[]) => void;
+  replyTo:
+    | {
+        parentComment?: CommentsInterface | RepliesInterface | undefined;
+        replyToComment?: CommentsInterface | RepliesInterface | undefined;
+      }
+    | undefined;
+  setReplyTo: (
+    replyTo:
+      | {
+          parentComment?: CommentsInterface | RepliesInterface | undefined;
+          replyToComment?: CommentsInterface | RepliesInterface | undefined;
+        }
+      | undefined
+  ) => void;
+};
 
 export default function TextBox({
   comments,
   setComments,
   setReplyTo,
   replyTo,
-}: {
-  comments: any;
-  setComments: any;
-  setReplyTo: (replyTo: CommentsInterface | undefined) => void;
-  replyTo: CommentsInterface | undefined;
-}) {
+}: TextBoxProps) {
   const { data: session } = useSession() as {
     data: { user: CustomUser };
     status: string;
@@ -39,8 +53,8 @@ export default function TextBox({
     const addedCommentOrReply = await addCommentOrReply(
       session.user._id as string,
       content,
-      replyTo?._id,
-      replyTo?.user.username
+      replyTo?.parentComment,
+      replyTo?.replyToComment
     );
 
     if (addedCommentOrReply) {
@@ -48,7 +62,7 @@ export default function TextBox({
 
       if (replyTo) {
         const updatedComments = comments.map((comment: any) => {
-          if (comment._id === replyTo._id) {
+          if (comment._id === replyTo.parentComment?._id) {
             return {
               ...comment,
               replies: [...comment.replies, addedCommentOrReply],
@@ -89,7 +103,7 @@ export default function TextBox({
           <HiMiniChatBubbleLeft color="white" size="16px" />
 
           <Typography sx={{ color: "white", paddingLeft: "7px" }}>
-            Respondiendo a {replyTo.user.username}
+            Respondiendo a {replyTo.replyToComment?.user.username}
           </Typography>
         </Box>
       ) : null}

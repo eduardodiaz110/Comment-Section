@@ -1,17 +1,26 @@
-import { CommentsInterface } from "@/types/interfaces";
+import { CommentsInterface, RepliesInterface } from "@/types/interfaces";
 import Comments from "./Comments";
 import { Typography, Grid } from "@mui/material";
 import { getComments } from "../functions/home";
+
+type CommentsListProps = {
+  comments: CommentsInterface[];
+  setComments: (comments: CommentsInterface[]) => void;
+  setReplyTo: (
+    replyTo:
+      | {
+          parentComment?: CommentsInterface | RepliesInterface | undefined;
+          replyToComment?: CommentsInterface | RepliesInterface | undefined;
+        }
+      | undefined
+  ) => void;
+};
 
 export default function CommentsList({
   comments,
   setComments,
   setReplyTo,
-}: {
-  comments: any;
-  setComments: any;
-  setReplyTo: (replyTo: CommentsInterface | undefined) => void;
-}) {
+}: CommentsListProps) {
   return (
     <Grid container spacing={2} maxWidth={"700px"}>
       {comments.map((comment: CommentsInterface) => (
@@ -26,7 +35,6 @@ export default function CommentsList({
         >
           <Comments
             key={`commentList1-${comment._id}`}
-            comments={comments}
             setComments={setComments}
             comment={comment}
             setReplyTo={setReplyTo}

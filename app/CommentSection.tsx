@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import CommentsList from "./components/CommentsList";
 import TextBox from "./components/TextBox";
-import { CommentsInterface } from "@/types/interfaces";
+import { CommentsInterface, RepliesInterface } from "@/types/interfaces";
 
 export default function CommentSection({
   comments,
@@ -10,9 +10,17 @@ export default function CommentSection({
   comments: any;
   setComments: any;
 }) {
-  const [replyTo, setReplyTo] = useState<CommentsInterface | undefined>(
-    undefined
-  );
+  const [replyTo, setReplyTo] = useState<
+    | {
+        parentComment?: CommentsInterface | RepliesInterface | undefined;
+        replyToComment?: CommentsInterface | RepliesInterface | undefined;
+      }
+    | undefined
+  >(undefined);
+
+  useEffect(() => {
+    console.log("replyTo", replyTo);
+  }, [replyTo]);
 
   return (
     <>

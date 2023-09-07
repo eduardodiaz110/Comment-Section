@@ -1,3 +1,5 @@
+import { CommentsInterface, RepliesInterface } from "@/types/interfaces";
+
 interface CommentData {
   content: string;
   score: number;
@@ -8,8 +10,8 @@ interface CommentData {
 export async function addCommentOrReply(
   userId: string,
   content: string,
-  replyToId?: string | undefined,
-  replyToUserName?: string | undefined
+  parentComment: CommentsInterface | RepliesInterface | undefined,
+  replyToComment: CommentsInterface | RepliesInterface | undefined
 ) {
   try {
     // Determina el body dependiendo de si es una respuesta o un comentario principal
@@ -19,9 +21,9 @@ export async function addCommentOrReply(
       userId,
     };
 
-    if (replyToId) {
-      bodyData.replyingTo = replyToId;
-      bodyData.content = `@${replyToUserName} ${content}`;
+    if (parentComment && replyToComment) {
+      bodyData.replyingTo = parentComment._id as string;
+      bodyData.content = `@${replyToComment.user.username} ${content}`;
     }
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/comments`, {

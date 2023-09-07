@@ -14,21 +14,24 @@ import {
 } from "../functions/comments";
 import { useRouter } from "next/navigation";
 
-interface CommentsProps {
+type CommentsProps = {
   comment: CommentsInterface;
-}
+  setComments: (comments: any) => void;
+  setReplyTo: (
+    replyTo:
+      | {
+          parentComment?: CommentsInterface | RepliesInterface | undefined;
+          replyToComment?: CommentsInterface | RepliesInterface | undefined;
+        }
+      | undefined
+  ) => void;
+};
 
 export default function Comments({
-  comments,
   setComments,
   comment,
   setReplyTo,
-}: {
-  comments: any;
-  setComments: any;
-  comment: CommentsInterface;
-  setReplyTo: (replyTo: CommentsInterface | undefined) => void;
-}) {
+}: CommentsProps) {
   const handleAddScore = async (id: string) => {
     const updatedScore = await addScore(id);
     if (updatedScore !== undefined && updatedScore !== null) {
@@ -113,13 +116,15 @@ export default function Comments({
     }
   };
 
-  const handleReply = async (replyTo: CommentsInterface) => {
+  const handleReply = async (parentComment: any, replyToComment: any) => {
     const sectionElement = document.getElementById("textBox");
 
-    // Si el elemento existe, desplázate hasta él
     if (sectionElement) {
       sectionElement.scrollIntoView({ behavior: "smooth" });
-      setReplyTo(replyTo);
+      setReplyTo({
+        parentComment,
+        replyToComment,
+      });
     } else {
       console.error(`Elemento con ID "textBox" no encontrado.`);
     }
@@ -184,7 +189,7 @@ export default function Comments({
             <Box sx={{ display: "flex" }}>
               <IconButton
                 style={{ color: "#595fb0", padding: "2px", marginTop: "-3px" }}
-                onClick={() => handleReply(comment)}
+                onClick={() => handleReply(comment, comment)}
               >
                 <HiMiniArrowUturnLeft size="15px" />
                 <Typography
@@ -304,7 +309,7 @@ export default function Comments({
                         padding: "2px",
                         marginTop: "-3px",
                       }}
-                      onClick={() => handleReply(comment)}
+                      onClick={() => handleReply(comment, reply)}
                     >
                       <HiMiniArrowUturnLeft size="15px" />
                       <Typography

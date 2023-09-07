@@ -6,7 +6,7 @@ export async function addScore(id: string) {
   try {
     // Hacer una solicitud GET para obtener los detalles del comentario
     const response = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/comments/${id}`,
+      `${process.env.NEXT_PUBLIC_URL}/api/comments/${id}`,
       {
         method: "GET",
         headers: {
@@ -25,7 +25,7 @@ export async function addScore(id: string) {
 
       // Realizar la solicitud PUT para actualizar el score
       const updateResponse = await fetch(
-        `${process.env.NEXTAUTH_URL}/api/comments/${id}`,
+        `${process.env.NEXT_PUBLIC_URL}/api/comments/${id}`,
         {
           method: "PUT",
           headers: {
@@ -62,7 +62,7 @@ export async function minusScore(id: string) {
   try {
     // Hacer una solicitud GET para obtener los detalles del comentario
     const response = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/comments/${id}`,
+      `${process.env.NEXT_PUBLIC_URL}/api/comments/${id}`,
       {
         method: "GET",
         headers: {
@@ -81,7 +81,7 @@ export async function minusScore(id: string) {
 
       // Realizar la solicitud PUT para actualizar el score
       const updateResponse = await fetch(
-        `${process.env.NEXTAUTH_URL}/api/comments/${id}`,
+        `${process.env.NEXT_PUBLIC_URL}/api/comments/${id}`,
         {
           method: "PUT",
           headers: {
@@ -118,7 +118,7 @@ export async function deleteCommentOrReply(id: string) {
   try {
     // Hacer una solicitud GET para obtener los detalles del comentario
     const response = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/comments/?id=${id}`,
+      `${process.env.NEXT_PUBLIC_URL}/api/comments/?id=${id}`,
       {
         method: "DELETE",
         headers: {
@@ -142,7 +142,7 @@ export async function replyToComment(replyTo: string) {
     return;
   }
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/comments/`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/comments/`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

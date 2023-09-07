@@ -13,7 +13,7 @@ export async function addCommentOrReply(
   try {
     // Determina el body dependiendo de si es una respuesta o un comentario principal
     const bodyData: CommentData = {
-      content,
+      content: `${content}`,
       score: 0,
       userId,
     };

@@ -1,7 +1,7 @@
 export async function getComments() {
   try {
-    console.log(`${process.env.NEXTAUTH_URL}/api/comments`);
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/comments`, {
+    console.log(`${process.env.NEXT_PUBLIC_URL}/api/comments`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/comments`, {
       cache: "no-store",
     });
     if (!res.ok) {

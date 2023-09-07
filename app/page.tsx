@@ -27,10 +27,6 @@ export default function Home() {
           alignItems: "center",
         }}
       >
-        <Typography variant="h1" pb={"30px"} style={{ textAlign: "center" }}>
-          Comments Section
-        </Typography>
-
         <CommentSection comments={comments} setComments={setComments} />
       </Container>
     </>

@@ -130,6 +130,21 @@ export default function Comments({
     }
   };
 
+  function StyledContent({ content }: any) {
+    const [mention, ...rest] = content.split(" ");
+    if (mention.startsWith("@")) {
+      return (
+        <>
+          <span style={{ fontWeight: "bold", color: "rgb(89, 95, 176)" }}>
+            {mention}
+          </span>{" "}
+          {rest.join(" ")}
+        </>
+      );
+    }
+    return content;
+  }
+
   return (
     <Box key={`commentId-${comment._id}`}>
       <Box
@@ -220,7 +235,7 @@ export default function Comments({
           </Box>
           <Box sx={{ pt: "7px" }}>
             <Typography fontWeight={400} sx={{ color: "#75787c" }}>
-              {comment.content}
+              <StyledContent content={comment.content} />
             </Typography>
           </Box>
         </Box>
@@ -340,7 +355,7 @@ export default function Comments({
                 </Box>
                 <Box sx={{ pt: "7px" }}>
                   <Typography fontWeight={400} sx={{ color: "#75787c" }}>
-                    {reply.content}
+                    <StyledContent content={reply.content} />
                   </Typography>
                 </Box>
               </Box>

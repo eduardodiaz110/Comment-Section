@@ -23,7 +23,7 @@ export async function addCommentOrReply(
 
     if (parentComment && replyToComment) {
       bodyData.replyingTo = parentComment._id as string;
-      bodyData.content = `@<span style="font-weight:bold; color:rgb(89, 95, 176);">${replyToComment.user.username}</span> ${content}`;
+      bodyData.content = `@${replyToComment.user.username} ${content}`;
     }
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/comments`, {

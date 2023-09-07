@@ -8,18 +8,20 @@ interface CommentData {
 export async function addCommentOrReply(
   userId: string,
   content: string,
-  replyTo?: string | undefined
+  replyToId?: string | undefined,
+  replyToUserName?: string | undefined
 ) {
   try {
     // Determina el body dependiendo de si es una respuesta o un comentario principal
     const bodyData: CommentData = {
-      content: `${content}`,
+      content,
       score: 0,
       userId,
     };
 
-    if (replyTo) {
-      bodyData.replyingTo = replyTo;
+    if (replyToId) {
+      bodyData.replyingTo = replyToId;
+      bodyData.content = `@${replyToUserName} ${content}`;
     }
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/comments`, {

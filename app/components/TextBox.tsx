@@ -39,7 +39,8 @@ export default function TextBox({
     const addedCommentOrReply = await addCommentOrReply(
       session.user._id as string,
       content,
-      replyTo?._id
+      replyTo?._id,
+      replyTo?.user.username
     );
 
     if (addedCommentOrReply) {

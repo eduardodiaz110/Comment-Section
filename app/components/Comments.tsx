@@ -135,7 +135,7 @@ export default function Comments({
     if (mention.startsWith("@")) {
       return (
         <>
-          <span style={{ fontWeight: "bold", color: "rgb(89, 95, 176)" }}>
+          <span style={{ fontWeight: 500, color: "rgb(89, 95, 176)" }}>
             {mention}
           </span>{" "}
           {rest.join(" ")}
